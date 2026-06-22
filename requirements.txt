@@ -3,3 +3,4 @@ gradio
 pillow
 numpy
 opencv-python-headless
+gdown

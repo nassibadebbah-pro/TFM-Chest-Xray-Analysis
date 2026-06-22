@@ -9,27 +9,32 @@ import tensorflow as tf
 import tf_keras as keras 
 from tf_keras.applications.densenet import preprocess_input
 
+
 LAST_CONV_LAYER = "conv5_block32_concat"
 IMG_SIZE = (768, 768)
 MODEL_PATH = "model_multiclass_DenseNet201.keras"
 TEST_DIR = "DATA_test"
 MASKS_DIR = "Marcadas"
 
+
 if not os.path.exists(MODEL_PATH):
-    print("Descargando modelo desde Google Drive...")
-   
-    os.system(f"wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1EHJsWc364a479mw1HiyB9euETQ-Sp4le' -O {MODEL_PATH}")
+    print("Descargando modelo desde Google Drive usando gdown...")
+    import gdown
+    url = 'https://drive.google.com/uc?id=1EHJsWc364a479mw1HiyB9euETQ-Sp4le'
+    gdown.download(url, MODEL_PATH, quiet=False)
 
 if not os.path.exists(TEST_DIR):
     print("Descargando e instalando imágenes de prueba...")
-   
-    os.system("wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1CPk6N2mPlPDr_Pp9q3r9mzfCV7kACRCb' -O DATA_test.zip")
+    import gdown
+    url = 'https://drive.google.com/uc?id=1CPk6N2mPlPDr_Pp9q3r9mzfCV7kACRCb'
+    gdown.download(url, 'DATA_test.zip', quiet=False)
     os.system("unzip -q DATA_test.zip && rm DATA_test.zip")
 
 if not os.path.exists(MASKS_DIR):
     print("Descargando e instalando máscaras médicas...")
-
-    os.system("wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1HeI7c_JVEJ___4CumgV8Cmde5nS9HWjU' -O Marcadas.zip")
+    import gdown
+    url = 'https://drive.google.com/uc?id=1HeI7c_JVEJ___4CumgV8Cmde5nS9HWjU'
+    gdown.download(url, 'Marcadas.zip', quiet=False)
     os.system("unzip -q Marcadas.zip && rm Marcadas.zip")
 
 
