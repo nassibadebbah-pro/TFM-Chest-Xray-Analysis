@@ -1,13 +1,13 @@
 import os
+os.environ["TF_USE_LEGACY_KERAS"] = "1"
+os.environ["KERAS_BACKEND"] = "tensorflow"
+
 import cv2
 import gradio as gr
 import numpy as np
 import tensorflow as tf
-
-os.environ["KERAS_BACKEND"] = "tensorflow"
-
-from tensorflow.keras.models import load_model
-from tensorflow.keras.applications.densenet import preprocess_input
+import tf_keras as keras 
+from tf_keras.applications.densenet import preprocess_input
 
 LAST_CONV_LAYER = "conv5_block32_concat"
 IMG_SIZE = (768, 768)
@@ -15,8 +15,27 @@ MODEL_PATH = "model_multiclass_DenseNet201.keras"
 TEST_DIR = "DATA_test"
 MASKS_DIR = "Marcadas"
 
+if not os.path.exists(MODEL_PATH):
+    print("Descargando modelo desde Google Drive...")
+   
+    os.system(f"wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1EHJsWc364a479mw1HiyB9euETQ-Sp4le' -O {MODEL_PATH}")
+
+if not os.path.exists(TEST_DIR):
+    print("Descargando e instalando imágenes de prueba...")
+   
+    os.system("wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1CPk6N2mPlPDr_Pp9q3r9mzfCV7kACRCb' -O DATA_test.zip")
+    os.system("unzip -q DATA_test.zip && rm DATA_test.zip")
+
+if not os.path.exists(MASKS_DIR):
+    print("Descargando e instalando máscaras médicas...")
+
+    os.system("wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1HeI7c_JVEJ___4CumgV8Cmde5nS9HWjU' -O Marcadas.zip")
+    os.system("unzip -q Marcadas.zip && rm Marcadas.zip")
+
+
 print("Cargando modelo en modo compatibilidad Keras 2...")
-model = load_model(MODEL_PATH, compile=False)
+
+model = keras.models.load_model(MODEL_PATH, compile=False)
 class_names = ['Effusion', 'Emphysema', 'No finding', 'Pneumonia', 'Pneumothorax']
 print(f"TensorFlow Version: {tf.__version__}")
 
@@ -31,8 +50,7 @@ if os.path.exists(TEST_DIR):
                 image_dict[rel_path] = os.path.join(root, file)
 
 def compute_gradcam(img_array, class_index):
-  
-    grad_model = tf.keras.models.Model(
+    grad_model = keras.models.Model(
         model.inputs,
         [model.get_layer(LAST_CONV_LAYER).output, model.output]
     )
@@ -42,10 +60,18 @@ def compute_gradcam(img_array, class_index):
         
     grads = tape.gradient(class_channel, conv_out)
     weights = tf.reduce_mean(grads, axis=(0, 1, 2))
-    cam = tf.reduce_sum(conv_out[0] * weights, axis=-1)
-    cam = tf.maximum(cam, 0)
-    cam /= tf.reduce_max(cam) + 1e-8
-    return cam.numpy()
+    
+    conv_out_val = conv_out[0].numpy() if hasattr(conv_out, "numpy") else conv_out[0]
+    weights_val = weights.numpy() if hasattr(weights, "numpy") else weights
+    
+    cam = np.zeros(conv_out_val.shape[:2], dtype=np.float32)
+    for i, w in enumerate(weights_val):
+        cam += w * conv_out_val[:, :, i]
+        
+    cam = np.maximum(cam, 0)
+    if np.max(cam) != 0:
+        cam /= np.max(cam) + 1e-8
+    return cam
 
 def overlay_gradcam(cam, orig, alpha=0.45):
     cam = cv2.resize(cam, (orig.shape[1], orig.shape[0]))
@@ -94,7 +120,6 @@ def predict_and_explain(image_dropdown, image_upload):
         inp = np.expand_dims(inp, 0)
 
         preds = model.predict(inp, verbose=0)[0]
-        
         sorted_indices = np.argsort(preds)[::-1]
         
         top1_idx = sorted_indices[0]
@@ -165,5 +190,5 @@ with gr.Blocks(title="TFM - AI Medical Predictor & Grad-CAM", theme=gr.themes.So
     clear_btn.click(fn=clear_all, inputs=[], outputs=[image_selector, input_img, output_text, output_cam, output_mask])
 
 if __name__ == "__main__":
-   
+ 
     demo.launch(server_name="0.0.0.0", server_port=10000)
