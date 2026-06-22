@@ -1,5 +1,5 @@
 tf-keras
 gradio
 pillow
-numpy==1.26.4
-opencv-python-headlessnumpy
+numpy
+opencv-python-headless
