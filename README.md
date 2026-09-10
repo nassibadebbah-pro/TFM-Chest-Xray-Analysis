@@ -135,33 +135,28 @@ However, smaller or more diffuse abnormalities such as Nodules and Atelectasis r
 
 ##  Visual Results
 
-### Model Performance
+### Model Performance (Architectura DenseNet201)
 
-![DenseNet201 Training Curves]
+
 <img width="605" height="217" alt="image" src="https://github.com/user-attachments/assets/fd266a26-d097-4313-a197-109df8ad862b" />
 
 
-### Confusion Matrix
+### Confusion Matrix (Architectura DenseNet201)
 
-![DenseNet201 Confusion Matrix]
 <img width="605" height="243" alt="image" src="https://github.com/user-attachments/assets/66238f59-9297-49bb-a10b-3ba06e1d51de" />
 
 
 ### Architecture Comparison
 
-![Architecture Comparison]
 <img width="472" height="208" alt="{34B57E37-16F9-4501-B2CF-7233A78B26E4}" src="https://github.com/user-attachments/assets/29a86a67-46b7-49bd-abd8-adfb586c91dd" />
 
 ### Clinical Mask vs Grad-CAM
 
-![Clinical Mask Comparison]
 <img width="605" height="459" alt="image" src="https://github.com/user-attachments/assets/e75cb1f6-f463-4806-a4ff-3d7c172f302b" />
 
 ##  Interactive Demo
 
 An interactive Gradio interface was developed to demonstrate the model's predictions and visualization capabilities.
-
-![Gradio Interface]
 
 <img width="503" height="283" alt="image" src="https://github.com/user-attachments/assets/4b2644ff-d28b-45c9-a427-466370615a93" />
 
