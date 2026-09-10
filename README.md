@@ -138,6 +138,7 @@ However, smaller or more diffuse abnormalities such as Nodules and Atelectasis r
 ### Model Performance
 
 ![DenseNet201 Training Curves](results/densenet201_training_curves.png)
+<img width="605" height="215" alt="image" src="https://github.com/user-attachments/assets/162a9769-819c-42e5-aa59-84e7de502430" />
 
 ### Confusion Matrix
 
